@@ -1,3 +1,6 @@
+package shopAllMethods;
+import static bankSystemSQLAllMethods.monoBank.*;
+
 import java.util.Scanner;
 
 public class User extends Admin{

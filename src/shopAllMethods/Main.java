@@ -1,3 +1,8 @@
+package shopAllMethods;
+
+import bankSystemSQLAllMethods.monoBank;
+import static bankSystemSQLAllMethods.monoBank.*;
+
 import java.util.Scanner;
 
 public class Main {
