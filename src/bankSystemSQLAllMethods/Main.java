@@ -17,7 +17,7 @@ public class Main{
         else if (userChoose == 2){
             onlineCardMonoOrPrivat24();
         } else if (userChoose == 3) {
-            System.out.println(" ");
+            System.out.println("bye-bye");
         }else {
             System.out.println("Something is not correct");
             mainMenu();

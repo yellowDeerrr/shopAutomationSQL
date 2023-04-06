@@ -2,6 +2,7 @@ package shopAllMethods;
 import static bankSystemSQLAllMethods.monoBank.*;
 
 import java.sql.*;
+import java.sql.ResultSet;
 import java.util.Scanner;
 
 import java.time.LocalDate;
@@ -131,54 +132,36 @@ public class Admin{
             }
         }
 
-    }
-
-    static class storageDbSQLForUser {
-        public static boolean checkHowMuchUserWantToBuyApples(int howMuchUserWantToBuy){
+        public static void convertToPriceApples(int howMuchUserWant){
             storageDbSQLForAdmin sql = new storageDbSQLForAdmin();
+            Scanner inn = new Scanner(System.in);
+
+            String query = "select * from applesInStorage";
             try{
                 Statement statement = sql.getConnection().createStatement();
-                ResultSet resultSet = statement.executeQuery("select howMuchInStorage from applesInStorage");
+                ResultSet resultSet = statement.executeQuery(query);
                 if (resultSet.next()){
-                    int result = resultSet.getInt(1);
-                    if (result >= howMuchUserWantToBuy) {
-                        int sum = result - howMuchUserWantToBuy;
-                        statement.executeUpdate("update applesInStorage set howMuchInStorage = ('"+sum+"')");
-                        return true;
-                    }
-                    else
-                        return false;
-                }else {
-                    System.out.println("Error");
-                    return false;
-                }
-            }catch (SQLException e){
-                e.printStackTrace();
-                return false;
-            }
-        }
+                    int sum = resultSet.getInt(2) * howMuchUserWant;
+                    System.out.print("Sum: " + sum + "\n1 - Pay\n2 - No\nYour choose: ");
+                    int userAnswer = in.nextInt();
+                    if (userAnswer == 1){
+                        System.out.print("Enter your number card: ");
+                        String userNumberCard = inn.nextLine();
 
-        public static boolean checkHowMuchUserWantToBuyBananas(int howMuchUserWantToBuy){
-            storageDbSQLForAdmin sql = new storageDbSQLForAdmin();
-            try{
-                Statement statement = sql.getConnection().createStatement();
-                ResultSet resultSet = statement.executeQuery("select howMuchInStorage from bananasInStorage");
-                if (resultSet.next()){
-                    int result = resultSet.getInt(1);
-                    if (result >= howMuchUserWantToBuy) {
-                        int sum = result - howMuchUserWantToBuy;
-                        statement.executeUpdate("update bananasInStorage set howMuchInStorage = ('"+sum+"')");
-                        return true;
+                        System.out.print("Enter PIN-CODE: ");
+                        int PinCode = inn.nextInt();
+
+                        monoBankDBForShopping.payByCard(userNumberCard, PinCode, sum, "apple");
+                    } else if (userAnswer == 2) {
+                        User.mainMenuUser();
+                    }else {
+                        System.out.println("Something is not correct");
+                        User.mainMenuUser();
                     }
-                    else
-                        return false;
-                }else {
-                    System.out.println("Error");
-                    return false;
                 }
+
             }catch (SQLException e){
                 e.printStackTrace();
-                return false;
             }
         }
     }
