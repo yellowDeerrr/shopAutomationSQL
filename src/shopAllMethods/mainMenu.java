@@ -1,12 +1,11 @@
 package shopAllMethods;
 
 import bankSystemSQLAllMethods.monoBank;
-import static bankSystemSQLAllMethods.monoBank.*;
 
 import java.util.Scanner;
 
-public class Main {
-    public static void main(String[] args){
+public class mainMenu {
+    public static void mainMenu(){
         Scanner in = new Scanner(System.in);
 
         System.out.println("1 - Admin\n2 - User\n3 - Bank");
@@ -17,7 +16,7 @@ public class Main {
             System.out.println("You enter in shop");
             User.mainMenuUser();
         } else if (userAnswer == 3) {
-            mainMenu();
+            monoBank.mainMenu();
         } else {
             System.out.println("Something is not correct");;
         }

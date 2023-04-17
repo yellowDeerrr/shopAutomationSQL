@@ -5,10 +5,6 @@ import java.util.Scanner;
 public class Main{
     private static final Scanner in = new Scanner(System.in);
 
-    public static void main(String[] args){
-        mainMenu();
-    }
-
     public static void mainMenu(){
         System.out.println("Internation bank system\n1 - ATM\n2 - Online card\n3 - Exit");
         int userChoose = in.nextInt();
