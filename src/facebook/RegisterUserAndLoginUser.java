@@ -3,27 +3,57 @@ package facebook;
 import java.sql.*;
 import java.util.Scanner;
 
+import static facebook.RegisterUserAndLoginUser.facebookRegisterAndLoginDB.checkUserInputLoginRegister;
+
 public class RegisterUserAndLoginUser extends mainMenuFacebook{
+
+    private static String name;
+    private static String surname;
+    private static int age;
+    private static int avatar;
+
     public static void registerUser(){
         Scanner in = new Scanner(System.in);
 
         System.out.print("What's your name: ");
-        String name = in.nextLine();
+        name = in.nextLine();
 
         System.out.print("Surname: ");
-        String surname = in.nextLine();
+        surname = in.nextLine();
 
         System.out.print("How old are you: ");
-        int age = in.nextInt();
-        while (true){
-            System.out.print("Think up login: ");
-            String userInputLogin = in.nextLine();
+        age = in.nextInt();
 
-            if (facebookRegisterAndLoginDB.checkUserInputLoginRegister(userInputLogin)){
-                System.out.println("Login is already using");
-            }else {
-                facebookAllUsersInfo.addUserInDB(name, surname, age);
+        System.out.println("Choose avatar\n1 - https://imgur.com/a/R6kTcrM\nYour choose: ");
+        avatar = in.nextInt();
+
+        inputLogin();
+    }
+
+    public static void inputLogin(){
+        Scanner in = new Scanner(System.in);
+        System.out.print("Think up login: ");
+        String userInputLogin = in.nextLine();
+        if (checkUserInputLoginRegister(userInputLogin)){
+            while (true){
+                System.out.print("Think up password: ");
+                String userInputPassword = in.nextLine();
+
+                System.out.print("Repeat password: ");
+                String repeatPassword = in.nextLine();
+
+                if (userInputPassword.equals(repeatPassword)) {
+                    facebookAddUserDeleteUserOrChangeProfile.addUserInDB(name, surname, age, avatar, userInputLogin, userInputPassword);
+                    facebookAddUserDeleteUserOrChangeProfile.setLogin(userInputLogin);
+                    mainMenuAfterRegister.mainMenu();
+                    break;
+                }else{
+                    System.out.println("Rrepeat password is not correct");
+                }
+
             }
+        }else {
+            inputLogin();
         }
     }
 
@@ -38,14 +68,15 @@ public class RegisterUserAndLoginUser extends mainMenuFacebook{
 
         if (facebookRegisterAndLoginDB.checkLoginAndPasswordInDBForLoginInAccount(userInputLogin, userInputPassword)){
             System.out.println("Welcome");
+            mainMenuAfterRegister.mainMenu();
         }else{
             System.out.println("Something is not correct");
             loginUser();
         }
     }
 
-    private static class facebookRegisterAndLoginDB{
-        private final static String jdbcURL = "jdbc:mysql://localhost:3306/facebookRegisterAndLoginDB";
+    static class facebookRegisterAndLoginDB{
+        private final static String jdbcURL = "jdbc:mysql://localhost:3306/facebookAllUsersDB";
         private final static String userName = "root";
         private final static String password = "root";
 
@@ -71,7 +102,14 @@ public class RegisterUserAndLoginUser extends mainMenuFacebook{
             try {
                 Statement statement = facebookRegisterAndLoginDB.getConnection().createStatement();
                 ResultSet resultSet = statement.executeQuery("select * from users where userlogin = ('"+login+"')");
-                return resultSet.next();
+
+                if (resultSet.next()){
+                    System.out.println("Login is already using");
+                    return false;
+                }else {
+                    return true;
+                }
+
             }catch (Exception e){
                 e.printStackTrace();
                 return false;
@@ -92,14 +130,18 @@ public class RegisterUserAndLoginUser extends mainMenuFacebook{
         }
     }
 
-    private static class facebookAllUsersInfo{
+    static class facebookAddUserDeleteUserOrChangeProfile{
         private final static String jdbcURL = "jdbc:mysql://localhost:3306/facebookAllUsersDB";
         private final static String userName = "root";
         private final static String password = "root";
 
+        private static String userLogin;
+
         private Connection connection;
 
-        private facebookAllUsersInfo() {
+
+
+        private facebookAddUserDeleteUserOrChangeProfile() {
             try {
                 connection = DriverManager.getConnection(jdbcURL, userName, password);
             } catch (Exception e) {
@@ -110,15 +152,57 @@ public class RegisterUserAndLoginUser extends mainMenuFacebook{
         private Connection getConnection() {
             return connection;
         }
+        public static void setLogin(String login){ userLogin = login; viewProfile();}
 
-        public static void addUserInDB(String name, String surname, int age){
-            facebookAllUsersInfo facebookAllUsersInfo = new facebookAllUsersInfo();
-            try {
-                Statement statement = facebookAllUsersInfo.getConnection().createStatement();
-                statement.executeUpdate("insert into users (name, surname, age) values (('"+name+"'), ('"+surname+"'), ('"+age+"'))");
+        public static void viewProfile(){
+            facebookAddUserDeleteUserOrChangeProfile facebookAddUserDeleteUserOrChangeProfile = new facebookAddUserDeleteUserOrChangeProfile();
+
+            try{
+                Statement statement = facebookAddUserDeleteUserOrChangeProfile.getConnection().createStatement();
+                ResultSet resultSet = statement.executeQuery("select * from users where userLogin = ('"+userLogin+"')");
+
+                if (resultSet.next()){
+                    String userName = resultSet.getString(2);
+                    String userSurname = resultSet.getString(3);
+                    String userAge = resultSet.getString(4);
+                    int avatar = resultSet.getInt(5);
+
+                    String avatarURL;
+                    if (avatar == 1){
+                        avatarURL = "https://imgur.com/a/R6kTcrM";
+                    }else{
+                        avatarURL = "nothing";
+                    }
+                    System.out.print("Name: " + userName +
+                            "\nSurname: " + userSurname +
+                            "\nAge: " + userAge +
+                            "\nAvatar: " + avatarURL +
+                            "\n");
+                }else {
+                    System.out.println("Error in system");
+                }
+
             }catch (Exception e){
                 e.printStackTrace();
             }
+        }
+
+        public static void addUserInDB(String name, String surname, int age, int avatar, String login, String password){
+            facebookAddUserDeleteUserOrChangeProfile facebookAllUsersInfo = new facebookAddUserDeleteUserOrChangeProfile();
+            try {
+                Statement statement = facebookAllUsersInfo.getConnection().createStatement();
+                statement.executeUpdate("insert into users (name, surname, age, avatar, userLogin, userPassword) values (('"+name+"'), ('"+surname+"'), ('"+age+"'), ('"+avatar+"'), ('"+login+"'), ('"+password+"'))");
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+        }
+
+        public static void deleteUserFromDB(){
+            System.out.println();
+        }
+
+        public static void changeProfile(){
+
         }
     }
 }
