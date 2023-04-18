@@ -4,35 +4,44 @@ import java.sql.*;
 import java.util.Scanner;
 
 public class RegisterUserAndLoginUser extends mainMenuFacebook{
-    private static String name;
-    private static String surname;
-    private static int age;
-
     public static void registerUser(){
         Scanner in = new Scanner(System.in);
 
         System.out.print("What's your name: ");
-        name = in.nextLine();
+        String name = in.nextLine();
 
         System.out.print("Surname: ");
-        surname = in.nextLine();
+        String surname = in.nextLine();
 
         System.out.print("How old are you: ");
-        age = in.nextInt();
+        int age = in.nextInt();
+        while (true){
+            System.out.print("Think up login: ");
+            String userInputLogin = in.nextLine();
 
-        userInputLogin();
+            if (facebookRegisterAndLoginDB.checkUserInputLoginRegister(userInputLogin)){
+                System.out.println("Login is already using");
+            }else {
+                facebookAllUsersInfo.addUserInDB(name, surname, age);
+            }
+        }
     }
 
-    private static void userInputLogin(){
+    public static void loginUser(){
         Scanner in = new Scanner(System.in);
 
-        System.out.print("Think up login: ");
+        System.out.print("Enter login: ");
         String userInputLogin = in.nextLine();
 
-        facebookRegisterAndLoginDB.checkUserInputLogin(userInputLogin);
-    }
-    public static void loginUser(){
+        System.out.print("Enter password: ");
+        String userInputPassword = in.nextLine();
 
+        if (facebookRegisterAndLoginDB.checkLoginAndPasswordInDBForLoginInAccount(userInputLogin, userInputPassword)){
+            System.out.println("Welcome");
+        }else{
+            System.out.println("Something is not correct");
+            loginUser();
+        }
     }
 
     private static class facebookRegisterAndLoginDB{
@@ -54,7 +63,7 @@ public class RegisterUserAndLoginUser extends mainMenuFacebook{
             return connection;
         }
 
-        public static void checkUserInputLogin(String login){
+        public static boolean checkUserInputLoginRegister(String login){
             Scanner in = new Scanner(System.in);
 
             facebookRegisterAndLoginDB facebookRegisterAndLoginDB = new facebookRegisterAndLoginDB();
@@ -62,32 +71,25 @@ public class RegisterUserAndLoginUser extends mainMenuFacebook{
             try {
                 Statement statement = facebookRegisterAndLoginDB.getConnection().createStatement();
                 ResultSet resultSet = statement.executeQuery("select * from users where userlogin = ('"+login+"')");
-                if (resultSet.next()){
-                    System.out.println("Login is already using");
-                    userInputLogin();
-                }else{
-                    while (true){
-                        System.out.print("Think up password: ");
-                        String password = in.nextLine();
-
-                        System.out.print("Repeat password: ");
-                        String repeatPassword = in.nextLine();
-
-                        if (password.equals(repeatPassword)){
-                            statement.executeUpdate("insert into users (userLogin, userPassword) values (('"+login+"'), ('"+password+"'))");
-                            facebookAllUsersInfo.addUserInDB(name, surname, age);
-                            break;
-                        }else {
-                            System.out.println("Error");
-                            continue;
-                        }
-                    }
-                }
+                return resultSet.next();
             }catch (Exception e){
                 e.printStackTrace();
+                return false;
             }
         }
 
+        public static boolean checkLoginAndPasswordInDBForLoginInAccount(String login, String password){
+            facebookRegisterAndLoginDB facebookRegisterAndLoginDB = new facebookRegisterAndLoginDB();
+
+            try {
+                Statement statement = facebookRegisterAndLoginDB.getConnection().createStatement();
+                ResultSet resultSet = statement.executeQuery("select * from users where userLogin = ('"+login+"') and userPassword = ('"+password+"')");
+                return resultSet.next();
+            }catch (Exception e){
+                e.printStackTrace();
+                return false;
+            }
+        }
     }
 
     private static class facebookAllUsersInfo{

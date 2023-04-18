@@ -1,3 +1,5 @@
+package Main;
+
 import java.util.Scanner;
 
 import bankSystemSQLAllMethods.monoBank;
@@ -18,7 +20,6 @@ public class Main {
             mainMenuFacebook.mainMenuForUserRegisterOrLogin();
         }else{
             System.out.println("Error");
-            main(args);
         }
     }
 }
