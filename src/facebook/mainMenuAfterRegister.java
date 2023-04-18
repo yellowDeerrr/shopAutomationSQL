@@ -56,41 +56,48 @@ public class mainMenuAfterRegister {
             facebookAllInfoAboutUsers facebookAllInfoAboutUsers = new facebookAllInfoAboutUsers();
 
             try {
-                Statement statement = facebookAllInfoAboutUsers.getConnection().createStatement();
+                Statement statement = facebookAllInfoAboutUsers.getConnection().createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
                 ResultSet resultSet = statement.executeQuery("select * from users where name = ('"+name+"') and surname = ('"+surname+"')");
 
-                if (resultSet.next()) {
-                    int[] acounts = new int[15];
-                    int i = 0;
-                    while (resultSet.next()) {
-                        i++;
+                if (resultSet.isBeforeFirst()) {
+                    if (resultSet.last()){
+                        int rows = resultSet.getRow() + 1;
+                        resultSet.beforeFirst();
 
-                        int id = resultSet.getInt(1);
-                        String userName = resultSet.getString(2);
-                        String userSurname = resultSet.getString(3);
-                        String userAge = resultSet.getString(4);
-                        int avatar = resultSet.getInt(5);
+                        int[] acounts = new int[rows];
+                        int i = 0;
+                        while (resultSet.next()) {
+                            i++;
 
-                        String avatarURL;
-                        if (avatar == 1) {
-                            avatarURL = "https://imgur.com/a/R6kTcrM";
-                        } else {
-                            avatarURL = "nothing";
+                            int id = resultSet.getInt(1);
+                            String userName = resultSet.getString(2);
+                            String userSurname = resultSet.getString(3);
+                            String userAge = resultSet.getString(4);
+                            int avatar = resultSet.getInt(5);
+
+                            String avatarURL;
+                            if (avatar == 1) {
+                                avatarURL = "https://imgur.com/a/R6kTcrM";
+                            } else {
+                                avatarURL = "nothing";
+                            }
+                            acounts[i] = id;
+                            System.out.print("\n\n" +
+                                    i + " - person" +
+                                            "\nName: " + userName +
+                                            "\nSurname: " + userSurname +
+                                            "\nAge: " + userAge +
+                                            "\nAvatar: " + avatarURL +
+                                            "\n");
                         }
-                        acounts[i] = id;
-                        System.out.print(
-                                i + " - person" +
-                                        "\n\nName: " + userName +
-                                        "\nSurname: " + userSurname +
-                                        "\nAge: " + userAge +
-                                        "\nAvatar: " + avatarURL +
-                                        "\n");
-                    }
-                    System.out.print("\n\nYour choose: ");
-                    int userAnswer = in.nextInt();
-                    int idAcountSearch = acounts[userAnswer];
+                        System.out.print("\n\nYour choose: ");
+                        int userAnswer = in.nextInt();
+                        int idAcountSearch = acounts[userAnswer];
 
-                    viewOtherProfile(idAcountSearch);
+                        viewOtherProfile(idAcountSearch);
+                    }
+
+
                 }else{
                     System.out.println("Nothing");
                 }
