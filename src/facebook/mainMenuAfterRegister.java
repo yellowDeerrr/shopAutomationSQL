@@ -3,6 +3,7 @@ package facebook;
 import java.sql.*;
 import java.util.Scanner;
 import java.util.Stack;
+import java.util.concurrent.TimeUnit;
 
 public class mainMenuAfterRegister {
     public static void mainMenu() {
@@ -16,6 +17,8 @@ public class mainMenuAfterRegister {
             mainMenu();
         } else if (userAnswer == 2) {
             viewOtherProfileMenu();
+        } else if (userAnswer ==3 ) {
+            game.gameMenu();
         } else {
             System.out.println("Error");
             mainMenuAfterRegister mainMenuAfterRegister = new mainMenuAfterRegister();
@@ -73,22 +76,27 @@ public class mainMenuAfterRegister {
                             String userName = resultSet.getString(2);
                             String userSurname = resultSet.getString(3);
                             String userAge = resultSet.getString(4);
-                            int avatar = resultSet.getInt(5);
+                            String userSex = resultSet.getString(5);
+                            int avatar = resultSet.getInt(6);
 
                             String avatarURL;
-                            if (avatar == 1) {
+                            if (avatar == 1)
                                 avatarURL = "https://imgur.com/a/R6kTcrM";
-                            } else {
+                            else
                                 avatarURL = "nothing";
-                            }
+
+                            if (userSex == null)
+                                userSex = "not specified";
                             acounts[i] = id;
                             System.out.print("\n\n" +
                                     i + " - person" +
-                                            "\nName: " + userName +
-                                            "\nSurname: " + userSurname +
-                                            "\nAge: " + userAge +
-                                            "\nAvatar: " + avatarURL +
-                                            "\n");
+                                    "\nName: " + userName +
+                                    "\nSurname: " + userSurname +
+                                    "\nAge: " + userAge +
+                                    "\nSex: " + userSex +
+                                    "\nAvatar: " + avatarURL +
+                                    "\n");
+                            TimeUnit.SECONDS.sleep((long) 1.5);
                         }
                         System.out.print("\n\nYour choose: ");
                         int userAnswer = in.nextInt();
@@ -118,17 +126,22 @@ public class mainMenuAfterRegister {
                     String userName = resultSet.getString(2);
                     String userSurname = resultSet.getString(3);
                     String userAge = resultSet.getString(4);
-                    int avatar = resultSet.getInt(5);
+                    String userSex = resultSet.getString(5);
+                    int avatar = resultSet.getInt(6);
 
                     String avatarURL;
-                    if (avatar == 1){
+                    if (avatar == 1)
                         avatarURL = "https://imgur.com/a/R6kTcrM";
-                    }else{
+                    else
                         avatarURL = "nothing";
-                    }
+
+                    if (userSex == null)
+                        userSex = "not specified";
+
                     System.out.print("Name: " + userName +
                             "\nSurname: " + userSurname +
                             "\nAge: " + userAge +
+                            "\nSex: " + userSex +
                             "\nAvatar: " + avatarURL +
                             "\n");
                 }else {

@@ -10,6 +10,7 @@ public class RegisterUserAndLoginUser extends mainMenuFacebook{
     private static String name;
     private static String surname;
     private static int age;
+    private static String sex;
     private static int avatar;
 
     public static void registerUser(){
@@ -23,6 +24,15 @@ public class RegisterUserAndLoginUser extends mainMenuFacebook{
 
         System.out.print("How old are you: ");
         age = in.nextInt();
+
+        System.out.print("1 - Man\n2 - Women\nYour choose: ");
+        int userInputSex = in.nextInt();
+        if (userInputSex == 1) sex = "Man";
+        else if (userInputSex == 2) sex = "Women";
+        else {
+            System.out.println("Error");
+            registerUser();
+        };
 
         System.out.println("Choose avatar\n1 - https://imgur.com/a/R6kTcrM\nYour choose: ");
         avatar = in.nextInt();
@@ -43,12 +53,12 @@ public class RegisterUserAndLoginUser extends mainMenuFacebook{
                 String repeatPassword = in.nextLine();
 
                 if (userInputPassword.equals(repeatPassword)) {
-                    facebookAddUserDeleteUserOrChangeProfile.addUserInDB(name, surname, age, avatar, userInputLogin, userInputPassword);
+                    facebookAddUserDeleteUserOrChangeProfile.addUserInDB(name, surname, age, sex, avatar, userInputLogin, userInputPassword);
                     facebookAddUserDeleteUserOrChangeProfile.setLogin(userInputLogin);
                     mainMenuAfterRegister.mainMenu();
                     break;
                 }else{
-                    System.out.println("Rrepeat password is not correct");
+                    System.out.println("Repeat password is not correct");
                 }
 
             }
@@ -165,17 +175,22 @@ public class RegisterUserAndLoginUser extends mainMenuFacebook{
                     String userName = resultSet.getString(2);
                     String userSurname = resultSet.getString(3);
                     String userAge = resultSet.getString(4);
-                    int avatar = resultSet.getInt(5);
+                    String userSex = resultSet.getString(5);
+                    int avatar = resultSet.getInt(6);
 
                     String avatarURL;
-                    if (avatar == 1){
+                    if (avatar == 1)
                         avatarURL = "https://imgur.com/a/R6kTcrM";
-                    }else{
+                    else
                         avatarURL = "nothing";
-                    }
+
+                    if (userSex == null)
+                        userSex = "not specified";
+
                     System.out.print("Name: " + userName +
                             "\nSurname: " + userSurname +
                             "\nAge: " + userAge +
+                            "\nSex: " + userSex +
                             "\nAvatar: " + avatarURL +
                             "\n");
                 }else {
@@ -187,11 +202,11 @@ public class RegisterUserAndLoginUser extends mainMenuFacebook{
             }
         }
 
-        public static void addUserInDB(String name, String surname, int age, int avatar, String login, String password){
+        public static void addUserInDB(String name, String surname, int age, String sex, int avatar, String login, String password){
             facebookAddUserDeleteUserOrChangeProfile facebookAllUsersInfo = new facebookAddUserDeleteUserOrChangeProfile();
             try {
                 Statement statement = facebookAllUsersInfo.getConnection().createStatement();
-                statement.executeUpdate("insert into users (name, surname, age, avatar, userLogin, userPassword) values (('"+name+"'), ('"+surname+"'), ('"+age+"'), ('"+avatar+"'), ('"+login+"'), ('"+password+"'))");
+                statement.executeUpdate("insert into users (name, surname, age, sex, avatar, userLogin, userPassword) values (('"+name+"'), ('"+surname+"'), ('"+age+"'), ('"+sex+"'), ('"+avatar+"'), ('"+login+"'), ('"+password+"'))");
             }catch (Exception e){
                 e.printStackTrace();
             }
